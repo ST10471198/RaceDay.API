@@ -8,6 +8,7 @@ namespace RaceDay.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //Participant profile management
     public class ParticipantsController : ControllerBase
     {
         private readonly RaceDayDbContext _context;
