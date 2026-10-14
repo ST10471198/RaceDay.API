@@ -9,6 +9,7 @@ namespace RaceDay.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //Organiser profile management
     public class OrganisersController : ControllerBase
     {
         private readonly RaceDayDbContext _context;
