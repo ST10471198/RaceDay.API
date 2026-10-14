@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDayAPI.Models
 {
+    //Represents an event organiser account
     public class Organiser
     {
         //Organiser Entity
