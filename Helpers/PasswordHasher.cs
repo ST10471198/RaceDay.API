@@ -3,6 +3,7 @@ using System.Text;
 
 namespace RaceDay.API.Helpers
 {
+    //Provides SHA256 hashing for passwords
     public  static class PasswordHasher
     {
         public static string HashPassword(string password)
