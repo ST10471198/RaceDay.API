@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDay.API.Models
 {
+    //Represents a weather forecast record for an event
     public class Weather
     {
         [Key]
