@@ -9,6 +9,7 @@ namespace RaceDay.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //Handles registration,login, and logout for all roles
     public class AuthController : ControllerBase
     {
         private readonly RaceDayDbContext _context;
