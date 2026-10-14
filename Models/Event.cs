@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDayAPI.Models
 {
+    //Represents a race event created by an organiser
     public class Event
     {
         [Key]
