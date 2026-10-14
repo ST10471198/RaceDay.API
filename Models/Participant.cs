@@ -2,6 +2,7 @@
 
 namespace RaceDay.API.Models
 {
+    //Represents a participant (runner/walker/cyclist)
     public class Participant
     {
         [Key]
