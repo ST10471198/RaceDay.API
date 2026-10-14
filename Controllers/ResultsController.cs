@@ -7,6 +7,7 @@ namespace RaceDay.API.Controllers
 {
     [Route("api")]
     [ApiController]
+    //Manages enrolments and race results
     public class ResultsController : ControllerBase
     {
         private readonly RaceDayDbContext _context;
