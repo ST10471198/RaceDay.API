@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDay.API.Models
 {
+    //Represents a particicpant's enrolment and result in a category
     public class Result
     {
         [Key]
