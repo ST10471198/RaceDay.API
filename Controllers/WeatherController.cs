@@ -7,6 +7,7 @@ namespace RaceDay.API.Controllers
 {
     [Route("api")]
     [ApiController]
+    //CRUD operations for weather forecasts
     public class WeatherController : ControllerBase
     {
         private readonly RaceDayDbContext _context;
