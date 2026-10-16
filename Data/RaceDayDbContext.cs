@@ -2,7 +2,7 @@
 using RaceDay.API.Models;
 using RaceDayAPI.Models;
 
-namespace RaceDayAPI.Data
+namespace RaceDay.API.Data
 {
     public class RaceDayDbContext : DbContext
     {
@@ -17,17 +17,13 @@ namespace RaceDayAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure Unique Constraints as per your SQL
             modelBuilder.Entity<Organiser>().HasIndex(o => o.Email).IsUnique();
             modelBuilder.Entity<Participant>().HasIndex(p => p.Email).IsUnique();
 
-            // Configure Result Unique Constraint (Participant can only enroll once per event)
             modelBuilder.Entity<Result>()
                 .HasIndex(r => new { r.EventID, r.ParticipantID })
                 .IsUnique();
 
-            // --- ADD THIS SECTION TO FIX THE CASCADE ERROR ---
-            // Tell EF to NOT cascade delete Results when a Category is deleted
             modelBuilder.Entity<Result>()
                 .HasOne(r => r.Category)
                 .WithMany(c => c.Results)
@@ -35,4 +31,4 @@ namespace RaceDayAPI.Data
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }
-    }
+}

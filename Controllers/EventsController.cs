@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RaceDay.API.Data;
 using RaceDay.API.Models;
-using RaceDayAPI.Data;
 using RaceDayAPI.Models;
 
 namespace RaceDay.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //CRUD operations for events
     public class EventsController : ControllerBase
     {
         private readonly RaceDayDbContext _context;
@@ -18,56 +17,64 @@ namespace RaceDay.API.Controllers
             _context = context;
         }
 
-        // GET: api/events  (Public)
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
         {
-            var events = await _context.Events
-                .Include(e => e.Categories)
-                .ToListAsync();
-
-            if (events == null || events.Count == 0)
-                return NotFound("No events found.");
-
+            var events = await _context.Events.Include(e => e.Categories).ToListAsync();
+            if (events.Count == 0) return NotFound("No events found.");
             return Ok(events);
         }
 
-        // GET: api/events/5  (Public)
         [HttpGet("{id}")]
         public async Task<ActionResult<Event>> GetEvent(int id)
         {
-            var ev = await _context.Events
-                .Include(e => e.Categories)
+            var ev = await _context.Events.Include(e => e.Categories)
                 .FirstOrDefaultAsync(e => e.EventID == id);
-
             if (ev == null) return NotFound("Event does not exist.");
             return Ok(ev);
         }
 
-        // POST: api/events  (Organiser Only)
         [HttpPost]
-        public async Task<ActionResult<Event>> CreateEvent(Event ev)
+        public async Task<ActionResult<Event>> CreateEvent(
+            [FromQuery] string name,
+            [FromQuery] string description,
+            [FromQuery] DateTime date,
+            [FromQuery] string location,
+            [FromQuery] int maxParticipants,
+            [FromQuery] string status)
         {
             if (HttpContext.Session.GetString("Role") != "Organiser")
                 return Unauthorized("Only Organisers can create events.");
 
-            if (ev == null) return BadRequest("Invalid event information.");
+            var ev = new Event
+            {
+                Name = name,
+                Description = description,
+                Date = date,
+                Location = location,
+                MaxParticipants = maxParticipants,
+                Status = status,
+                OrganiserID = (int)HttpContext.Session.GetInt32("UserId")
+            };
 
-            ev.OrganiserID = (int)HttpContext.Session.GetInt32("UserId");
             _context.Events.Add(ev);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetEvent), new { id = ev.EventID }, ev);
         }
 
-        // PUT: api/events/5  (Organiser Only)
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEvent(int id, Event ev)
+        public async Task<IActionResult> UpdateEvent(
+            int id,
+            [FromQuery] string name,
+            [FromQuery] string description,
+            [FromQuery] DateTime date,
+            [FromQuery] string location,
+            [FromQuery] int maxParticipants,
+            [FromQuery] string status)
         {
             if (HttpContext.Session.GetString("Role") != "Organiser")
                 return Unauthorized("Only Organisers can update events.");
-
-            if (id != ev.EventID) return BadRequest("Invalid information.");
 
             var existing = await _context.Events.FindAsync(id);
             if (existing == null) return NotFound("Event does not exist.");
@@ -75,17 +82,17 @@ namespace RaceDay.API.Controllers
             if (existing.OrganiserID != HttpContext.Session.GetInt32("UserId"))
                 return StatusCode(403, "You do not own this event.");
 
-            existing.Description = ev.Description;
-            existing.Date = ev.Date;
-            existing.Location = ev.Location;
-            existing.MaxParticipants = ev.MaxParticipants;
-            existing.Status = ev.Status;
+            existing.Name = name;
+            existing.Description = description;
+            existing.Date = date;
+            existing.Location = location;
+            existing.MaxParticipants = maxParticipants;
+            existing.Status = status;
 
             await _context.SaveChangesAsync();
             return Ok(existing);
         }
 
-        // DELETE: api/events/5  (Organiser Only)
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
@@ -94,7 +101,6 @@ namespace RaceDay.API.Controllers
 
             var ev = await _context.Events.FindAsync(id);
             if (ev == null) return NotFound("Event does not exist.");
-
             if (ev.OrganiserID != HttpContext.Session.GetInt32("UserId"))
                 return StatusCode(403, "You do not own this event.");
 
@@ -104,11 +110,3 @@ namespace RaceDay.API.Controllers
         }
     }
 }
-
-
-
-
-
-
-
-

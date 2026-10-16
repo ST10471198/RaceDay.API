@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RaceDay.API.Data;
 using RaceDay.API.Helpers;
 using RaceDay.API.Models;
-using RaceDayAPI.Data;
 using RaceDayAPI.Models;
 
 namespace RaceDay.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //Handles registration,login, and logout for all roles
     public class AuthController : ControllerBase
     {
         private readonly RaceDayDbContext _context;
@@ -19,59 +18,86 @@ namespace RaceDay.API.Controllers
             _context = context;
         }
 
-        // POST: api/auth/register/organiser
-        [HttpPost("register/organiser")]
-        public async Task<IActionResult> RegisterOrganiser([FromBody] Organiser org)
+        // POST: api/auth/register
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(
+            [FromQuery] string email,
+            [FromQuery] string password,
+            [FromQuery] string firstName,
+            [FromQuery] string surname,
+            [FromQuery] string role,
+            [FromQuery] DateTime? dateOfBirth = null,
+            [FromQuery] string phoneNumber = null)
         {
-            if (org == null || string.IsNullOrEmpty(org.Email) || string.IsNullOrEmpty(org.PasswordHash))
-                return BadRequest("Invalid or missing details.");
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                return BadRequest("Email and password are required.");
 
-            if (await _context.Organisers.AnyAsync(o => o.Email == org.Email))
-                return Conflict("Email already exists.");
+            if (role != "Organiser" && role != "Participant")
+                return BadRequest("Role must be 'Organiser' or 'Participant'.");
 
-            org.PasswordHash = PasswordHasher.HashPassword(org.PasswordHash);
-            _context.Organisers.Add(org);
-            await _context.SaveChangesAsync();
+            var fullName = $"{firstName} {surname}".Trim();
 
-            return StatusCode(201, "Organiser created successfully.");
-        }
+            if (role == "Organiser")
+            {
+                if (await _context.Organisers.AnyAsync(o => o.Email == email))
+                    return Conflict("Email already exists.");
 
-        // POST: api/auth/register/participant
-        [HttpPost("register/participant")]
-        public async Task<IActionResult> RegisterParticipant([FromBody] Participant p)
-        {
-            if (p == null || string.IsNullOrEmpty(p.Email) || string.IsNullOrEmpty(p.PasswordHash))
-                return BadRequest("Invalid or missing details.");
+                var organiser = new Organiser
+                {
+                    Name = fullName,
+                    Email = email,
+                    Phone = phoneNumber ?? "",
+                    PasswordHash = PasswordHasher.HashPassword(password),
+                    CreatedAt = DateTime.Now
+                };
 
-            if (await _context.Participants.AnyAsync(x => x.Email == p.Email))
-                return Conflict("Participant already exists.");
+                _context.Organisers.Add(organiser);
+                await _context.SaveChangesAsync();
 
-            p.PasswordHash = PasswordHasher.HashPassword(p.PasswordHash);
-            _context.Participants.Add(p);
-            await _context.SaveChangesAsync();
+                return StatusCode(201, "Organiser registered successfully.");
+            }
+            else
+            {
+                if (await _context.Participants.AnyAsync(p => p.Email == email))
+                    return Conflict("Email already exists.");
 
-            return StatusCode(201, "Participant registered successfully.");
+                var participant = new Participant
+                {
+                    Name = fullName,
+                    Email = email,
+                    PasswordHash = PasswordHasher.HashPassword(password),
+                    DateOfBirth = dateOfBirth ?? new DateTime(2000, 1, 1),
+                    IdNumber = "N/A",
+                    EmergencyContact = "N/A",
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.Participants.Add(participant);
+                await _context.SaveChangesAsync();
+
+                return StatusCode(201, "Participant registered successfully.");
+            }
         }
 
         // POST: api/auth/login
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto login)
+        public async Task<IActionResult> Login(
+            [FromQuery] string email,
+            [FromQuery] string password)
         {
-            if (login == null || string.IsNullOrEmpty(login.Email) || string.IsNullOrEmpty(login.Password))
-                return BadRequest("Invalid login details.");
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                return BadRequest("Email and password are required.");
 
-            // Check Organiser first
-            var organiser = await _context.Organisers.FirstOrDefaultAsync(o => o.Email == login.Email);
-            if (organiser != null && PasswordHasher.VerifyPassword(login.Password, organiser.PasswordHash))
+            var organiser = await _context.Organisers.FirstOrDefaultAsync(o => o.Email == email);
+            if (organiser != null && PasswordHasher.VerifyPassword(password, organiser.PasswordHash))
             {
                 HttpContext.Session.SetInt32("UserId", organiser.OrganiserID);
                 HttpContext.Session.SetString("Role", "Organiser");
                 return Ok(new { role = "Organiser", id = organiser.OrganiserID, name = organiser.Name });
             }
 
-            // Check Participant
-            var participant = await _context.Participants.FirstOrDefaultAsync(p => p.Email == login.Email);
-            if (participant != null && PasswordHasher.VerifyPassword(login.Password, participant.PasswordHash))
+            var participant = await _context.Participants.FirstOrDefaultAsync(p => p.Email == email);
+            if (participant != null && PasswordHasher.VerifyPassword(password, participant.PasswordHash))
             {
                 HttpContext.Session.SetInt32("UserId", participant.ParticipantID);
                 HttpContext.Session.SetString("Role", "Participant");
@@ -88,11 +114,5 @@ namespace RaceDay.API.Controllers
             HttpContext.Session.Clear();
             return Ok("Logged out successfully.");
         }
-    }
-
-    public class LoginDto
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
     }
 }

@@ -1,6 +1,10 @@
-﻿public class LoginDTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RaceDay.API.DTO
 {
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string Role { get; set; } // "Organiser" or "Participant"
+    public class LoginDto
+    {
+        [Required, EmailAddress] public string Email { get; set; }
+        [Required] public string Password { get; set; }
+    }
 }

@@ -1,29 +1,23 @@
 ﻿using RaceDayAPI.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDay.API.Models
 {
-    //Represents a weather forecast record for an event
     public class Weather
     {
         [Key]
         public int WeatherID { get; set; }
 
-        [Required]
         public DateTime ForecastDate { get; set; }
 
-        [Required]
         public double Temperature { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string Condition { get; set; }
+        public string Condition { get; set; } = string.Empty;
 
-        [Required]
         public double WindSpeed { get; set; }
 
-        [Required]
         public double Humidity { get; set; }
 
         // Foreign key to Event

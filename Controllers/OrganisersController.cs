@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RaceDay.API.Data;
 using RaceDay.API.Helpers;
 using RaceDay.API.Models;
-using RaceDayAPI.Data;
 using RaceDayAPI.Models;
 
 namespace RaceDay.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //Organiser profile management
     public class OrganisersController : ControllerBase
     {
         private readonly RaceDayDbContext _context;
@@ -19,7 +18,6 @@ namespace RaceDay.API.Controllers
             _context = context;
         }
 
-        // GET: api/organisers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Organiser>> GetOrganiser(int id)
         {
@@ -28,18 +26,19 @@ namespace RaceDay.API.Controllers
 
             var org = await _context.Organisers.FindAsync(id);
             if (org == null) return NotFound("Organiser does not exist.");
-
             return Ok(org);
         }
 
-        // PUT: api/organisers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrganiser(int id, Organiser org)
+        public async Task<IActionResult> UpdateOrganiser(
+            int id,
+            [FromQuery] string name,
+            [FromQuery] string email,
+            [FromQuery] string phone,
+            [FromQuery] string password = null)
         {
             if (HttpContext.Session.GetString("Role") != "Organiser")
                 return Unauthorized("Only Organisers can update their details.");
-
-            if (id != org.OrganiserID) return BadRequest("Invalid data.");
 
             if (HttpContext.Session.GetInt32("UserId") != id)
                 return StatusCode(403, "You can only update your own account.");
@@ -47,18 +46,17 @@ namespace RaceDay.API.Controllers
             var existing = await _context.Organisers.FindAsync(id);
             if (existing == null) return NotFound("Organiser does not exist.");
 
-            existing.Name = org.Name;
-            existing.Email = org.Email;
-            existing.Phone = org.Phone;
+            existing.Name = name;
+            existing.Email = email;
+            existing.Phone = phone;
 
-            if (!string.IsNullOrEmpty(org.PasswordHash))
-                existing.PasswordHash = PasswordHasher.HashPassword(org.PasswordHash);
+            if (!string.IsNullOrEmpty(password))
+                existing.PasswordHash = PasswordHasher.HashPassword(password);
 
             await _context.SaveChangesAsync();
             return Ok(existing);
         }
 
-        // DELETE: api/organisers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrganiser(int id)
         {
