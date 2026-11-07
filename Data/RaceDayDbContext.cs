@@ -6,29 +6,28 @@ namespace RaceDay.API.Data
 {
     public class RaceDayDbContext : DbContext
     {
-        public RaceDayDbContext(DbContextOptions<RaceDayDbContext> options) : base(options) { }
+        public RaceDayDbContext(DbContextOptions<RaceDayDbContext> options) : base(options)
+        {
+        }
 
         public DbSet<Organiser> Organisers { get; set; }
         public DbSet<Participant> Participants { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Weather> Weathers { get; set; }
-        public DbSet<Result> Results { get; set; }
+        public DbSet<Result> Results { get; set; } // Changed to 'Result'
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Organiser>().HasIndex(o => o.Email).IsUnique();
-            modelBuilder.Entity<Participant>().HasIndex(p => p.Email).IsUnique();
+            base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Result>()
-                .HasIndex(r => new { r.EventID, r.ParticipantID })
-                .IsUnique();
-
-            modelBuilder.Entity<Result>()
-                .HasOne(r => r.Category)
-                .WithMany(c => c.Results)
-                .HasForeignKey(r => r.CategoryID)
-                .OnDelete(DeleteBehavior.NoAction);
+            // Force EF Core to use the singular table names from your SQL script
+            modelBuilder.Entity<Organiser>().ToTable("Organiser");
+            modelBuilder.Entity<Participant>().ToTable("Participant");
+            modelBuilder.Entity<Event>().ToTable("Event");
+            modelBuilder.Entity<Category>().ToTable("Category");
+            modelBuilder.Entity<Weather>().ToTable("Weather");
+            modelBuilder.Entity<Result>().ToTable("Result"); // Changed to 'Result'
         }
     }
 }
