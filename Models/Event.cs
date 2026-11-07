@@ -33,6 +33,8 @@ namespace RaceDayAPI.Models
         [StringLength(50)]
         public string Status { get; set; } = "Upcoming";
 
+        public string? BannerImageUrl { get; set; }
+
         public ICollection<Category> Categories { get; set; } = new List<Category>();
         public ICollection<Weather> WeatherForecasts { get; set; } = new List<Weather>();
     }
