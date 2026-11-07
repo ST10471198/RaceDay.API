@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using RaceDay.API.Data;
+using RaceDay.API.Services; // Add this
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -15,6 +15,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<RaceDayDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
