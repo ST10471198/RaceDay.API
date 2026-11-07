@@ -1,28 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace RaceDay.API.DTO
+﻿namespace RaceDay.API.DTO
 {
-    public class RegisterDTO
+    public class RegisterDto
     {
-        [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string Role { get; set; } = "Participant";
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        // Organiser fields
+        public string? Phone { get; set; }
 
-        [Required]
-        public string Password { get; set; }
-
-        [Required]
-        public string Role { get; set; } // "Organiser" or "Participant"
-
-        // Participant-specific (nullable)
-        public DateTime? DateOfBirth { get; set; }
+        // Participant fields
+        public string? DateOfBirth { get; set; } // Using string for easy JSON transfer
         public string? IdNumber { get; set; }
         public string? EmergencyContact { get; set; }
-
-        // Organiser-specific (nullable)
-        public string? Phone { get; set; }
     }
 }
