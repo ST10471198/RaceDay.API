@@ -1,0 +1,25 @@
+﻿@model RaceDay.MVC.Models.LoginRequestModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5">
+    <div class="col-md-4 mx-auto card shadow p-4">
+        <h3 class="text-center mb-4">Login</h3>
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="mb-3">
+                <label>Email</label>
+                <input asp-for="Email" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label>Password</label>
+                <input asp-for="Password" type="password" class="form-control" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <div class="text-center mt-3">
+                <a asp-action="Register">Register here</a>
+            </div>
+        </form>
+    </div>
+</div>
