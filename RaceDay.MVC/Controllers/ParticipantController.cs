@@ -24,9 +24,12 @@ namespace RaceDay.MVC.Controllers
             return int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
         }
 
+        // --- BROWSE EVENTS ---
         public async Task<IActionResult> Index()
         {
             var allEvents = await _apiService.GetAsync<List<EventViewModel>>("api/Events");
+
+            // Filter to only show "Open" or "Upcoming" events, ordered by date
             var upcomingEvents = allEvents?
                 .Where(e => e.Status == "Open" || e.Status == "Upcoming")
                 .OrderBy(e => e.Date)
@@ -35,15 +38,18 @@ namespace RaceDay.MVC.Controllers
             return View(upcomingEvents);
         }
 
+        // --- EVENT DETAILS ---
         public async Task<IActionResult> EventDetails(int id)
         {
             var ev = await _apiService.GetAsync<EventViewModel>($"api/Events/{id}");
             if (ev == null) return NotFound("Event not found.");
+
             return View(ev);
         }
 
+        // --- ENROL LOGIC ---
         [HttpPost]
-        public async Task<IActionResult> Enrol(int EventID, int CategoryID) // Fixed parameter names
+        public async Task<IActionResult> Enrol(int EventID, int CategoryID)
         {
             if (!IsParticipant()) return RedirectToAction("Login", "Auth");
 
@@ -62,23 +68,26 @@ namespace RaceDay.MVC.Controllers
                 return RedirectToAction(nameof(MyEvents));
             }
 
-            TempData["ErrorMessage"] = "Failed to enrol. You might already be registered.";
+            TempData["ErrorMessage"] = "Failed to enrol. You might already be registered for this event.";
             return RedirectToAction(nameof(EventDetails), new { id = EventID });
         }
 
+        // --- MY EVENTS ---
         public async Task<IActionResult> MyEvents()
         {
             if (!IsParticipant()) return RedirectToAction("Login", "Auth");
 
             var allEvents = await _apiService.GetAsync<List<EventViewModel>>("api/Events");
             var myEvents = new List<EventViewModel>();
+            int userId = GetUserId();
 
             if (allEvents != null)
             {
                 foreach (var ev in allEvents)
                 {
                     var enrolments = await _apiService.GetAsync<List<EnrolmentViewModel>>($"api/Events/{ev.EventID}/enrolments");
-                    var myEnrolment = enrolments?.FirstOrDefault(e => e.ParticipantID == GetUserId());
+                    var myEnrolment = enrolments?.FirstOrDefault(e => e.ParticipantID == userId);
+
                     if (myEnrolment != null)
                     {
                         myEvents.Add(ev);
@@ -86,39 +95,58 @@ namespace RaceDay.MVC.Controllers
                 }
             }
 
+            // Sort enrolled events by date
+            myEvents = myEvents.OrderBy(e => e.Date).ToList();
+
             return View(myEvents);
         }
 
+        // --- MY RESULTS ---
         public async Task<IActionResult> MyResults()
         {
             if (!IsParticipant()) return RedirectToAction("Login", "Auth");
 
             var allEvents = await _apiService.GetAsync<List<EventViewModel>>("api/Events");
-            var myResults = new List<EnrolmentViewModel>();
+            var myResults = new List<ParticipantResultViewModel>();
+            int userId = GetUserId();
 
             if (allEvents != null)
             {
                 foreach (var ev in allEvents)
                 {
                     var enrolments = await _apiService.GetAsync<List<EnrolmentViewModel>>($"api/Events/{ev.EventID}/enrolments");
-                    var myEnrolment = enrolments?.FirstOrDefault(e => e.ParticipantID == GetUserId());
+                    var myEnrolment = enrolments?.FirstOrDefault(e => e.ParticipantID == userId);
+
                     if (myEnrolment != null)
                     {
-                        myResults.Add(myEnrolment);
+                        myResults.Add(new ParticipantResultViewModel
+                        {
+                            EventName = ev.Name,
+                            EventDate = ev.Date,
+                            CategoryName = myEnrolment.CategoryName,
+                            Status = myEnrolment.Status,
+                            FinishTime = myEnrolment.FinishTime,
+                            Position = myEnrolment.Position
+                        });
                     }
                 }
             }
 
+            // Sort by most recent event first
+            myResults = myResults.OrderByDescending(r => r.EventDate).ToList();
+
             return View(myResults);
         }
 
+        // --- PROFILE ---
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
             if (!IsParticipant()) return RedirectToAction("Login", "Auth");
 
             var profile = await _apiService.GetAsync<ParticipantProfileViewModel>($"api/Participants/{GetUserId()}");
-            if (profile == null) return NotFound();
+
+            if (profile == null) return NotFound("Profile not found.");
 
             return View(profile);
         }
@@ -147,7 +175,7 @@ namespace RaceDay.MVC.Controllers
                 return RedirectToAction(nameof(Profile));
             }
 
-            ModelState.AddModelError("", "Failed to update profile.");
+            ModelState.AddModelError("", "Failed to update profile. Please try again.");
             return View(model);
         }
     }
