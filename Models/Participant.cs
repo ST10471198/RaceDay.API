@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using RaceDay.API.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RaceDay.API.Models
+namespace RaceDayAPI.Models
 {
-    //Represents a participant (runner/walker/cyclist)
     public class Participant
     {
         [Key]
@@ -10,30 +11,31 @@ namespace RaceDay.API.Models
 
         [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required]
         [StringLength(150)]
-        [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
 
         [Required]
         public DateTime DateOfBirth { get; set; }
 
         [Required]
         [StringLength(50)]
-        public string IdNumber { get; set; }
+        public string IdNumber { get; set; } = string.Empty;
 
         [Required]
         [StringLength(100)]
-        public string EmergencyContact { get; set; }
+        public string EmergencyContact { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // Navigation property — one Participant has many Results
-        public ICollection<Result> Results { get; set; }
+        public string? ProfilePictureUrl { get; set; } 
+
+        // Navigation property
+        public ICollection<Result> Results { get; set; } = new List<Result>();
     }
 }
