@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RaceDay.API.Data;
 using RaceDay.API.DTO;
+using RaceDay.API.Models;
 using RaceDayAPI.Models;
 
 namespace RaceDay.API.Controllers
@@ -20,10 +21,11 @@ namespace RaceDay.API.Controllers
         [HttpGet("Events/{eventId}/enrolments")]
         public async Task<ActionResult<IEnumerable<EnrolmentDto>>> GetEnrolmentsForEvent(int eventId)
         {
-            if (HttpContext.Session.GetString("Role") != "Organiser")
-                return Unauthorized("Only Organisers can view enrolments.");
+            // FIXED: Allow both Organisers and Participants to view this list
+            var role = HttpContext.Session.GetString("Role");
+            if (role != "Organiser" && role != "Participant")
+                return Unauthorized("You must be logged in.");
 
-            // Join Result, Participant, and Category tables
             var enrolments = await _context.Results
                 .Include(r => r.Participant)
                 .Include(r => r.Category)
@@ -58,13 +60,34 @@ namespace RaceDay.API.Controllers
                 {
                     result.FinishTime = dto.FinishTime;
                     result.Position = dto.Position;
-                    // Optional: If a finish time is entered, update status to 'Finished'
                     if (dto.FinishTime.HasValue) result.Status = "Finished";
                 }
             }
 
             await _context.SaveChangesAsync();
             return Ok(new { Message = "Results updated successfully" });
+        }
+
+        [HttpPost("Results")]
+        public async Task<IActionResult> CreateEnrolment([FromBody] CreateEnrolmentDto dto)
+        {
+            if (HttpContext.Session.GetString("Role") != "Participant")
+                return Unauthorized("Only Participants can enrol.");
+
+            var exists = await _context.Results.AnyAsync(r => r.EventID == dto.EventID && r.ParticipantID == dto.ParticipantID);
+            if (exists) return BadRequest("You are already enrolled in this event.");
+
+            var result = new Result
+            {
+                EventID = dto.EventID,
+                ParticipantID = dto.ParticipantID,
+                CategoryID = dto.CategoryID,
+                Status = "Registered"
+            };
+
+            _context.Results.Add(result);
+            await _context.SaveChangesAsync();
+            return Ok(new { Message = "Enrolled successfully" });
         }
     }
 }
