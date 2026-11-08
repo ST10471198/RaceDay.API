@@ -1,16 +1,35 @@
 ﻿@{ ViewData["Title"] = "Welcome to RaceDay"; }
 
-<div class="container mt-5">
-    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm border">
-        <div class="container-fluid py-5 text-center">
-            <h1 class="display-4 fw-bold text-primary">Welcome to RaceDay</h1>
-            <p class="fs-4 text-muted mt-3">The ultimate platform for managing and participating in South Africa's road running, walking, and cycling events.</p>
+<style>
+    /* Custom CSS for the Hero Background */
+    .hero-section {
+        /* Uses a dynamic sports background image from Unsplash */
+        background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=2070&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Makes the text pop against the dark background */
+    .hero-section h1, .hero-section p {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    }
+</style>
+
+<div class="container mt-4">
+    <!-- Hero Section with Background Image -->
+    <div class="hero-section rounded-3 shadow-lg mb-5">
+        <div class="container-fluid py-5 text-center text-white">
+            <h1 class="display-3 fw-bold mb-3">Welcome to RaceDay</h1>
+            <p class="fs-4 mb-4 mx-auto" style="max-width: 800px;">The ultimate platform for managing and participating in South Africa's road running, walking, and cycling events.</p>
             
             @if (Context.Session.GetString("UserId") == null)
             {
                 <div class="mt-4">
-                    <!-- Login button removed, only Get Started remains -->
-                    <a asp-controller="Auth" asp-action="Register" class="btn btn-success btn-lg px-4">Get Started</a>
+                    <a asp-controller="Auth" asp-action="Register" class="btn btn-success btn-lg px-5 py-3 fw-bold shadow">Get Started</a>
                 </div>
             }
             else
@@ -18,11 +37,12 @@
                 <div class="mt-4">
                     @if (Context.Session.GetString("Role") == "Organiser")
                     {
-                        <a asp-controller="Organiser" asp-action="Dashboard" class="btn btn-primary btn-lg px-4">Go to Organiser Dashboard</a>
+                        <a asp-controller="Organiser" asp-action="Dashboard" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow">Go to Organiser Dashboard</a>
                     }
                     else
                     {
-                        <a asp-controller="Participant" asp-action="Index" class="btn btn-primary btn-lg px-4">Go to Participant Dashboard</a>
+                        <!-- Changed button text here -->
+                        <a asp-controller="Participant" asp-action="Index" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow">Browse Events</a>
                     }
                 </div>
             }
@@ -30,18 +50,18 @@
     </div>
 
     <!-- Info Section -->
-    <div class="row align-items-md-stretch mt-4">
+    <div class="row align-items-md-stretch">
         <div class="col-md-6 mb-4">
             <div class="h-100 p-5 text-white bg-dark rounded-3 shadow-sm">
-                <h2>For Organisers</h2>
-                <p>Create events, manage categories, track enrolments, and publish results effortlessly.</p>
+                <h2 class="fw-bold"><i class="bi bi-trophy-fill text-warning"></i> For Organisers</h2>
+                <p class="fs-5 mt-3">Create events, manage categories, track enrolments, and publish results effortlessly.</p>
             </div>
         </div>
         <div class="col-md-6 mb-4">
             <div class="h-100 p-5 bg-white border rounded-3 shadow-sm">
-                <h2>For Participants</h2>
-                <p>Discover upcoming races, register for your favourite categories, and track your personal race history.</p>
+                <h2 class="fw-bold"><i class="bi bi-person-heart text-primary"></i> For Participants</h2>
+                <p class="fs-5 mt-3">Discover upcoming races, register for your favourite categories, and track your personal race history.</p>
             </div>
         </div>
     </div>
-</div> 
+</div>
