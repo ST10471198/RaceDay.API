@@ -1,0 +1,96 @@
+﻿@model RaceDay.MVC.Models.EventViewModel
+@{
+    ViewData["Title"] = "Manage Categories";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Categories for: <span class="text-primary">@Model.Name</span></h3>
+        <a asp-action="Dashboard" class="btn btn-secondary fw-bold shadow-sm">
+            Back to Dashboard
+        </a>
+    </div>
+
+    <hr />
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Add New Category</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddCategory" method="post">
+                        <input type="hidden" asp-for="EventID" name="EventID" />
+
+                        <div class="mb-2">
+                            <label class="form-label">Category Name</label>
+                            <input name="Name" class="form-control" required />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Distance (KM)</label>
+                            <input name="DistanceKM" type="number" step="0.01" class="form-control" required />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Entry Fee (R)</label>
+                            <input name="EntryFee" type="number" step="0.01" class="form-control" required />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-2">
+                                <label class="form-label">Min Age</label>
+                                <input name="AgeMin" type="number" class="form-control" required />
+                            </div>
+                            <div class="col-6 mb-2">
+                                <label class="form-label">Max Age</label>
+                                <input name="AgeMax" type="number" class="form-control" required />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Start Time</label>
+                            <input name="StartTime" type="time" class="form-control" required />
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Add Category</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <table class="table table-bordered shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Dist (KM)</th>
+                        <th>Age</th>
+                        <th>Fee</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Categories != null && Model.Categories.Any())
+                    {
+                        foreach (var cat in Model.Categories)
+                        {
+                            <tr>
+                                <td>@cat.Name</td>
+                                <td>@cat.DistanceKM</td>
+                                <td>@cat.AgeMin - @cat.AgeMax</td>
+                                <td>R @cat.EntryFee</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No categories created yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
