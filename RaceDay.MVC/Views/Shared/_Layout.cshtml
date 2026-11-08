@@ -5,33 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RaceDay</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/RaceDay.MVC.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-primary" asp-controller="Auth" asp-action="Login">RaceDay</a>
+                <!-- Brand Logo goes to Home -->
+                <a class="navbar-brand fw-bold text-primary" asp-controller="Home" asp-action="Index">RaceDay</a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <!-- Left Side Navigation -->
                     <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+
                         @if (Context.Session.GetString("Role") == "Organiser")
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Organiser" asp-action="Dashboard">Dashboard</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" asp-controller="Organiser" asp-action="Dashboard">Organiser Dashboard</a>
+                            </li>
+                        }
+                        else if (Context.Session.GetString("Role") == "Participant")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" asp-controller="Participant" asp-action="Index">Participant Dashboard</a>
+                            </li>
                         }
                     </ul>
+
+                    <!-- Right Side Navigation (Auth) -->
                     <ul class="navbar-nav">
                         @if (Context.Session.GetString("UserId") != null)
                         {
-                            <li class="nav-item"><span class="nav-link fw-bold">Hello, @Context.Session.GetString("UserName")</span></li>
+                            <!-- Logged In View -->
+                            <li class="nav-item d-flex align-items-center">
+                                <span class="nav-link text-dark fw-bold mb-0">Hello, @Context.Session.GetString("UserName")</span>
+                            </li>
                             <li class="nav-item">
-                                <form asp-controller="Auth" asp-action="Logout" method="post">
-                                    <button type="submit" class="btn btn-link nav-link text-danger">Logout</button>
+                                <form asp-controller="Auth" asp-action="Logout" method="post" class="form-inline">
+                                    <button type="submit" class="btn btn-link nav-link text-danger text-decoration-none">Logout</button>
                                 </form>
                             </li>
                         }
                         else
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Register</a></li>
+                            <!-- Logged Out View -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Register</a>
+                            </li>
                         }
                     </ul>
                 </div>
@@ -39,17 +71,26 @@
         </nav>
     </header>
 
+    <!-- Main Content Area -->
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
+    <!-- Footer -->
+    <footer class="border-top footer text-muted mt-5 py-3">
+        <div class="container text-center">
+            &copy; 2026 - RaceDay. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <!-- THIS IS THE MISSING LINE THAT FIXES THE ERROR -->
+    <!-- Required for rendering scripts from views -->
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
