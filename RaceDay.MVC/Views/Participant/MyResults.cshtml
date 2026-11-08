@@ -1,0 +1,34 @@
+﻿@model List<RaceDay.MVC.Models.EnrolmentViewModel>
+@{ ViewData["Title"] = "My Results"; }
+
+<div class="container mt-4">
+    <h2 class="fw-bold mb-4">My Race History</h2>
+    
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You don't have any results yet. Keep training!</div>
+    }
+    else
+    {
+        <table class="table table-bordered shadow-sm align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Finish Time</th>
+                    <th>Position</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var res in Model) {
+                    <tr>
+                        <td>@res.CategoryName</td>
+                        <td><span class="badge @(res.Status == "Finished" ? "bg-success" : "bg-warning text-dark")">@res.Status</span></td>
+                        <td>@(res.FinishTime?.ToString(@"hh\:mm\:ss") ?? "N/A")</td>
+                        <td>@(res.Position?.ToString() ?? "N/A")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<RaceDay.MVC.Models.EventViewModel>
+@{ ViewData["Title"] = "My Events"; }
+
+<div class="container mt-4">
+    <h2 class="fw-bold mb-4">My Registered Events</h2>
+    
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success shadow-sm">@TempData["SuccessMessage"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You haven't enrolled in any events yet. <a asp-action="Index">Browse events here</a>.</div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach(var ev in Model) {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100 border-success">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">@ev.Name</h5>
+                            <p class="mb-1 text-muted">📍 @ev.Location</p>
+                            <p class="mb-3"><strong>Date:</strong> @ev.Date.ToString("dd MMM yyyy")</p>
+                            <a asp-action="EventDetails" asp-route-id="@ev.EventID" class="btn btn-outline-success w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div> 

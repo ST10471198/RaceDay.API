@@ -1,3 +1,57 @@
-﻿@{ ViewData["Title"] = "Participant Home"; }
-<h2>Participant Home</h2>
-<div class="alert alert-info mt-3">This is a placeholder. Phase 4 will be built here.</div>
+﻿@model IEnumerable<RaceDay.MVC.Models.EventViewModel>
+@{ ViewData["Title"] = "Browse Events"; }
+
+<div class="container mt-4">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary">Upcoming Races</h1>
+        <p class="lead text-muted">Find your next challenge and join the RaceDay community.</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center shadow-sm">
+            There are no upcoming events at the moment. Check back later!
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var ev in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100 border-0">
+                        <!-- Azure Banner Image -->
+                        @if (!string.IsNullOrEmpty(ev.BannerImageUrl))
+                        {
+                            <img src="@ev.BannerImageUrl" class="card-img-top" alt="@ev.Name" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="bg-secondary text-white d-flex justify-content-center align-items-center" style="height: 200px;">
+                                <span>No Banner Image</span>
+                            </div>
+                        }
+                        
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-primary">@ev.Name</h5>
+                            <p class="card-text text-muted mb-1">📍 @ev.Location</p>
+                            <p class="card-text mb-3">
+                                <strong>Date:</strong> @ev.Date.ToString("dd MMM yyyy")
+                            </p>
+                            
+                            <span class="badge @(ev.Status == "Open" ? "bg-success" : "bg-primary")">
+                                @ev.Status
+                            </span>
+                        </div>
+                        
+                        <div class="card-footer bg-white border-top-0 pb-3">
+                            <a asp-action="EventDetails" asp-route-id="@ev.EventID" class="btn btn-outline-primary w-100 fw-bold">
+                                View Details & Enrol
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
