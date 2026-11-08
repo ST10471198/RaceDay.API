@@ -3,10 +3,9 @@
 
 <div class="container mt-4">
     <div class="mb-3">
-        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">&larr; Back to Events</a>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back to Events</a>
     </div>
 
-    <!-- ADDED ERROR/SUCCESS MESSAGES HERE -->
     @if (TempData["ErrorMessage"] != null)
     {
         <div class="alert alert-danger shadow-sm">@TempData["ErrorMessage"]</div>
@@ -26,7 +25,10 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h1 class="display-5 fw-bold text-primary">@Model.Name</h1>
-                    <h5 class="text-muted mb-4">📍 @Model.Location | 📅 @Model.Date.ToString("dd MMMM yyyy")</h5>
+                    <h5 class="text-muted mb-4">
+                        <i class="bi bi-geo-alt-fill text-danger"></i> @Model.Location | 
+                        <i class="bi bi-calendar-event text-primary"></i> @Model.Date.ToString("dd MMMM yyyy")
+                    </h5>
                 </div>
                 <span class="badge @(Model.Status == "Open" ? "bg-success" : "bg-primary") fs-5 px-3 py-2">
                     @Model.Status
@@ -71,4 +73,4 @@
             }
         </div>
     </div>
-</div> 
+</div>
