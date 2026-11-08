@@ -1,28 +1,27 @@
-# RaceDay API - PROG6212 Part 2
+# RaceDay - PROG6212 Portfolio of Evidence (Part 3)
 
-![.NET 8](https://img.shields.io/badge/.NET-8.0-blue)
-[![.NET CI](https://github.com/ST10471198/RaceDay-API/actions/workflows/dotnet.yml/badge.svg)](https://github.com/ST10471198/RaceDay-API/actions/workflows/dotnet.yml)
+![.NET 10](https://img.shields.io/badge/.NET-10.0-blue)
+[![RaceDay CI/CD](https://github.com/ST10471198/RaceDay-API/actions/workflows/dotnet.yml/badge.svg)](https://github.com/ST10471198/RaceDay-API/actions/workflows/dotnet.yml)
 
-A RESTful API built with ASP.NET Core Web API for managing road running, walking, and cycling events in South Africa. This project allows Organisers to manage events and Participants to enrol and track their results.
+RaceDay is a full-stack web-based event management system designed for the South African road running, walking, and cycling community. It allows Event Organisers to create and manage events, categories, and participant results, while Participants can browse upcoming events, enter events, track their personal performance history, and manage their profiles.
 
 ## 📋 Project Overview
 
-This is **Part 2** of the PROG6212 Portfolio of Evidence (PoE). It implements the RESTful API layer for the RaceDay event management system, built on top of the plan and database schema designed in Part 1.
+This is the final submission (**Part 3**) of the PROG6212 Portfolio of Evidence. It builds upon Part 1 (Database Planning) and Part 2 (RESTful API) by adding a complete **ASP.NET Core MVC** web frontend and integrating **Azure Blob Storage** for cloud-based image handling.
 
-The API:
-- Uses **ASP.NET Core Web API** (.NET 8)
-- Connects to **SQL Server** via **Entity Framework Core**
-- Implements **session-based authentication** with role-based access control
-- Has **comprehensive unit tests** using xUnit and EF Core InMemory
-- Uses **GitHub Actions** for continuous integration (build + test on every push)
+### 👥 User Roles
+The system supports two distinct roles with tailored interfaces and permissions:
+
+*   **Organiser:** Can create, edit, and delete events; upload event banner images to Azure; manage event categories; view all participant enrolments; and capture/publish race results.
+*   **Participant:** Can create an account, browse upcoming events, enrol in events by selecting a category, view their registered events, track their personal race results (finish times and positions), and update their profile picture.
 
 ## 🚀 Setup Instructions
 
 ### Prerequisites
-
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- SQL Server (LocalDB or Express) or SQL Server Management Studio (SSMS)
-- Visual Studio 2022 (with the **ASP.NET and web development** workload)
+*   [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+*   SQL Server (LocalDB or Express) or SQL Server Management Studio (SSMS)
+*   Visual Studio 2022 (with the **ASP.NET and web development** workload)
+*   An Azure Storage Account (for Blob Storage integration)
 
 ### Steps to Run Locally
 
@@ -30,84 +29,85 @@ The API:
    ```bash
    git clone https://github.com/ST10471198/RaceDay-API.git
    cd RaceDay-API
-   API Endpoints Summary
-Controller	Base Route	Description
-Auth	/api/auth	Register, Login, Logout
-Organisers	/api/organisers	Organiser profile management
-Events	/api/events	Event CRUD operations
-Categories	/api/events/{id}/categories	Event category management
-Weather	/api/events/{id}/weather	Live weather forecasts for events
-Participants	/api/participants	Participant profile management
-Results	/api/events/{id}/results	Enrolments and race results
-See the full endpoint list in Swagger UI once the API is running (https://localhost:7012/swagger).
 
-🧪 Unit Testing
-Tests are written with xUnit and the EF Core InMemory provider, so they don't require a real database.
 
-Test Coverage
-AuthControllerTests — Organiser/Participant registration, duplicate email conflict, invalid role rejection, successful login, failed login
+2. Set up the Database:
+   Open the SQL script provided in the /docs folder (or your root folder).
+   Run the script in SQL Server Management Studio (SSMS) to create the RaceDayDB database, tables, and seed data.
 
-EventsControllerTests — Participants can't create events (401), Organisers can create events (201), empty event list returns 404
+3. Configure the API:
+	Open the RaceDay.API project.
+	In appsettings.Development.json, add your SQL Server connection string and your Azure Storage connection string:
+					
+	{
+         "ConnectionStrings": {
+         "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=RaceDayDB;Trusted_Connection=True;MultipleActiveResultSets=true"
+    },
+         "AzureStorage": {
+         "ConnectionString": "YOUR_AZURE_CONNECTION_STRING_HERE",
+         "ContainerName": "raceday-images"
+        }
+    }
 
-ResultsControllerTests — Enrolment rules (Participant can enrol, Organiser cannot, duplicate enrolment rejected)
+    Run the API. Swagger UI will open at https://localhost:7012/swagger
 
-Run the Tests
-In Visual Studio:
 
-Test → Test Explorer → Run All Tests
+4. Run the MVC Application:
+    Set RaceDay.MVC as the startup project.
+    Note: Ensure the API is running in the background.
+    Run the MVC app. It will open in your browser at https://localhost:7176.
 
-Or from the command line:
 
-powershell
-dotnet test
 🔄 CI/CD Pipeline
-This project uses GitHub Actions for continuous integration. The workflow file is at .github/workflows/dotnet.yml.
+This project uses GitHub Actions for continuous integration. The workflow file is located at .github/workflows/dotnet.yml.
+On every push to the master or main branch, GitHub Actions will:
+Setup .NET 10
+Restore dependencies for the API, MVC, and Test projects.
+Build all projects in Release mode.
+Run all 8 unit tests to ensure API integrity.
 
-On every push to master or main, GitHub Actions will:
-
-Restore NuGet dependencies
-
-Build the entire solution
-
-Run all unit tests
-
-Successful CI Build
+Successful CI Build:
 Below is a screenshot of a successful green build with all tests passing:
-
 https://docs/ci-screenshot.png
 
-(Create a docs folder in the repo, upload the screenshot as ci-screenshot.png, and it will render here.)
+🎥 Video Presentation
+A full walkthrough of the running application, explaining the MVC structure, Blob Storage integration, and the code architecture can be found below:
+
+👉 Watch the Part 3 Video Presentation on YouTube: Add the link here
+
+
+🛠️ Technologies Used
+C# 12 / .NET 10
+ASP.NET Core Web API & MVC
+Entity Framework Core (Code-First / Database-First)
+SQL Server (LocalDB)
+Azure Blob Storage for image uploads (Event banners & Profile pictures)
+Bootstrap 5 & Bootstrap Icons for UI design
+xUnit & Moq for unit testing
+GitHub Actions for CI/CD
 
 📁 Project Structure
-text
-RaceDay.API/
-├── Controllers/           API endpoints (Auth, Events, Categories, Weather, Participants, Results, Organisers)
-├── Models/                EF Core entities (Organiser, Participant, Event, Category, Weather, Result)
-├── Data/                  DbContext (RaceDayDbContext)
-├── Helpers/               PasswordHasher utility
-├── Migrations/            EF Core migrations
-├── Program.cs             Application startup and service registration
-└── appsettings.json       Configuration and connection string
-
-RaceDay.Tests/
-├── AuthControllerTests.cs
-├── EventsControllerTests.cs
-├── ResultsControllerTests.cs
-└── TestSession.cs         In-memory session helper for tests
-🛠️ Technologies Used
-C# 12 / .NET 8
-
-ASP.NET Core Web API
-
-Entity Framework Core 8 (Code-First)
-
-SQL Server (LocalDB / Express)
-
-xUnit for unit testing
-
-Moq for mocking
-
-GitHub Actions for CI/CD
+RaceDay-API/
+├── RaceDay.API/           # The Backend API
+│   ├── Controllers/       # Auth, Events, Categories, Enrolments, Participants
+│   ├── Models/            # EF Core entities
+│   ├── DTOs/              # Data Transfer Objects for JSON payloads
+│   ├── Services/          # BlobStorageService for Azure
+│   └── Program.cs         # API startup
+│
+├── RaceDay.MVC/           # The Frontend Web Application
+│   ├── Controllers/       # OrganiserController, ParticipantController, AuthController
+│   ├── Models/            # ViewModels for the UI
+│   ├── Views/             # Razor Views (Dashboard, Events, Profile, etc.)
+│   ├── Services/          # ApiService (HTTP client wrapper)
+│   └── wwwroot/           # CSS, JS, Logo, and Images
+│
+├── RaceDay.Tests/         # Unit Tests for the API
+│   ├── AuthControllerTests.cs
+│   ├── EventsControllerTests.cs
+│   └── ResultsControllerTests.cs
+│
+└── .github/workflows/     # CI/CD Pipeline (dotnet.yml)
 
 📄 License
 This project is submitted as part of the PROG6212 Portfolio of Evidence at The Independent Institute of Education. Not for commercial use.
