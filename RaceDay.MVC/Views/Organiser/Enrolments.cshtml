@@ -1,0 +1,44 @@
+﻿@model IEnumerable<RaceDay.MVC.Models.EnrolmentViewModel>
+@{
+    ViewData["Title"] = "Event Enrolments";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Enrolments for: <span class="text-primary">@ViewBag.EventName</span></h3>
+        <a asp-action="Dashboard" class="btn btn-secondary fw-bold shadow-sm">
+            Back to Dashboard
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info shadow-sm">No participants have enrolled for this event yet.</div>
+    }
+    else
+    {
+        <table class="table table-striped table-hover shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Participant Name</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">@e.ParticipantName</td>
+                        <td>@e.CategoryName</td>
+                        <td>
+                            <span class="badge @(e.Status == "Confirmed" || e.Status == "Finished" ? "bg-success" : "bg-warning text-dark")">
+                                @e.Status
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
