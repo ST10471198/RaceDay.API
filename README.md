@@ -73,7 +73,7 @@ https://docs/ci-screenshot.png
 🎥 Video Presentation
 A full walkthrough of the running application, explaining the MVC structure, Blob Storage integration, and the code architecture can be found below:
 
-👉 Watch the Part 3 Video Presentation on YouTube: Add the link here
+👉 Watch the Part 3 Video Presentation on YouTube: https://youtu.be/pW5hDhGEops
 
 
 🛠️ Technologies Used
