@@ -1,8 +1,47 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@{ ViewData["Title"] = "Welcome to RaceDay"; }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<div class="container mt-5">
+    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm border">
+        <div class="container-fluid py-5 text-center">
+            <h1 class="display-4 fw-bold text-primary">Welcome to RaceDay</h1>
+            <p class="fs-4 text-muted mt-3">The ultimate platform for managing and participating in South Africa's road running, walking, and cycling events.</p>
+            
+            @if (Context.Session.GetString("UserId") == null)
+            {
+                <div class="mt-4">
+                    <!-- Login button removed, only Get Started remains -->
+                    <a asp-controller="Auth" asp-action="Register" class="btn btn-success btn-lg px-4">Get Started</a>
+                </div>
+            }
+            else
+            {
+                <div class="mt-4">
+                    @if (Context.Session.GetString("Role") == "Organiser")
+                    {
+                        <a asp-controller="Organiser" asp-action="Dashboard" class="btn btn-primary btn-lg px-4">Go to Organiser Dashboard</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Participant" asp-action="Index" class="btn btn-primary btn-lg px-4">Go to Participant Dashboard</a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Info Section -->
+    <div class="row align-items-md-stretch mt-4">
+        <div class="col-md-6 mb-4">
+            <div class="h-100 p-5 text-white bg-dark rounded-3 shadow-sm">
+                <h2>For Organisers</h2>
+                <p>Create events, manage categories, track enrolments, and publish results effortlessly.</p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="h-100 p-5 bg-white border rounded-3 shadow-sm">
+                <h2>For Participants</h2>
+                <p>Discover upcoming races, register for your favourite categories, and track your personal race history.</p>
+            </div>
+        </div>
+    </div>
+</div> 

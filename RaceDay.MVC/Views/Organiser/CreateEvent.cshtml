@@ -1,0 +1,38 @@
+﻿@model RaceDay.MVC.Models.CreateEventModel
+@{
+    ViewData["Title"] = "Create Event";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4>Create New Event</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="CreateEvent" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-md-6 mb-3"><label>Event Name</label><input asp-for="Name" class="form-control" required /></div>
+                    <div class="col-md-6 mb-3"><label>Location</label><input asp-for="Location" class="form-control" required /></div>
+                </div>
+                <div class="mb-3"><label>Description</label><textarea asp-for="Description" class="form-control" rows="3"></textarea></div>
+                <div class="row">
+                    <div class="col-md-4 mb-3"><label>Date</label><input asp-for="Date" type="date" class="form-control" required /></div>
+                    <div class="col-md-4 mb-3"><label>Max Participants</label><input asp-for="MaxParticipants" type="number" class="form-control" required /></div>
+                    <div class="col-md-4 mb-3">
+                        <label>Status</label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Open">Open</option>
+                            <option value="Upcoming">Upcoming</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label>Banner Image (Azure Blob)</label>
+                    <input asp-for="BannerImage" type="file" class="form-control" accept="image/*" />
+                </div>
+                <button type="submit" class="btn btn-success w-100">Save Event to Azure & Database</button>
+            </form>
+        </div>
+    </div>
+</div>

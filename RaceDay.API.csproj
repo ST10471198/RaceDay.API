@@ -22,6 +22,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.18" />
 	</ItemGroup>
 
 	<!-- This tells the API project to ignore the nested MVC project folder -->

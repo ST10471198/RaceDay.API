@@ -2,9 +2,10 @@ using RaceDay.MVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// 1. Enable Session
+// 1. Enable Session (to remember who is logged in)
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -15,24 +16,34 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddHttpContextAccessor();
 
-// 2. Register ApiService
+// 2. Register ApiService (The bridge to your API)
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
-    // MAKE SURE THIS PORT MATCHES YOUR API PORT
+    // Ensure this port matches your API project's port
     client.BaseAddress = new Uri("https://localhost:7012/");
 });
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 
-app.UseSession(); // 3. Use Session before Authorization
+// 3. Session MUST be used before Authorization and Endpoints
+app.UseSession();
 app.UseAuthorization();
 
+// 4. Set the default route to the Home page
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Auth}/{action=Login}/{id?}"); // Default to Login
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
