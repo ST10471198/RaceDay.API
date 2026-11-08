@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 60" width="250" height="60">
+  <!-- Icon -->
+  <g transform="translate(10, 10)">
+    <path d="M 0,20 C 10,5 25,35 40,10" fill="none" stroke="#0d6efd" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="40" cy="10" r="6" fill="#198754" />
+  </g>
+  <!-- Text -->
+  <text x="60" y="42" font-family="Arial, sans-serif" font-weight="900" font-size="32" fill="#0d6efd" letter-spacing="1">Race<tspan fill="#198754">Day</tspan></text>
+</svg>
