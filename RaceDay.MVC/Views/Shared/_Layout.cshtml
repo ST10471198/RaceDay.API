@@ -5,67 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RaceDay</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/RaceDay.MVC.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-primary" asp-controller="Home" asp-action="Index">RaceDay</a>
+        <nav class="navbar navbar-expand-lg navbar-light mb-4">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo.svg" alt="RaceDay Logo" />
+                </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 ms-4 gap-2">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index"><i class="bi bi-house-door me-1"></i> Home</a>
                         </li>
 
                         @if (Context.Session.GetString("Role") == "Organiser")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark fw-bold" asp-controller="Organiser" asp-action="Dashboard">Organiser Dashboard</a>
+                                <a class="nav-link" asp-controller="Organiser" asp-action="Dashboard"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
                             </li>
                         }
                         else if (Context.Session.GetString("Role") == "Participant")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark fw-bold" asp-controller="Participant" asp-action="Index">Find Events</a>
+                                <a class="nav-link" asp-controller="Participant" asp-action="Index"><i class="bi bi-search me-1"></i> Find Events</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Participant" asp-action="MyEvents">My Events</a>
+                                <a class="nav-link" asp-controller="Participant" asp-action="MyEvents"><i class="bi bi-calendar-check me-1"></i> My Events</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Participant" asp-action="MyResults">My Results</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Participant" asp-action="Profile">Profile</a>
+                                <a class="nav-link" asp-controller="Participant" asp-action="MyResults"><i class="bi bi-trophy me-1"></i> My Results</a>
                             </li>
                         }
                     </ul>
 
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav align-items-center gap-2">
                         @if (Context.Session.GetString("UserId") != null)
                         {
-                            <li class="nav-item d-flex align-items-center">
-                                <span class="nav-link text-dark fw-bold mb-0">Hello, @Context.Session.GetString("UserName")</span>
-                            </li>
                             <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Participant" asp-action="Profile">
+                                    <i class="bi bi-person-circle fs-5 align-middle me-1"></i>
+                                    <span class="align-middle">@Context.Session.GetString("UserName")</span>
+                                </a>
+                            </li>
+                            <li class="nav-item ms-2">
                                 <form asp-controller="Auth" asp-action="Logout" method="post" class="form-inline">
-                                    <button type="submit" class="btn btn-link nav-link text-danger text-decoration-none">Logout</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                        <i class="bi bi-box-arrow-right me-1"></i> Logout
+                                    </button>
                                 </form>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a>
+                                <a class="btn btn-outline-primary btn-sm rounded-pill px-3" asp-controller="Auth" asp-action="Login"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Register</a>
+                                <a class="btn btn-primary btn-sm rounded-pill px-3" asp-controller="Auth" asp-action="Register"><i class="bi bi-person-plus me-1"></i> Register</a>
                             </li>
                         }
                     </ul>
@@ -74,14 +78,14 @@
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container pb-4">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mt-5 py-3">
-        <div class="container text-center">
+    <footer class="footer text-center text-muted">
+        <div class="container">
             &copy; 2026 - RaceDay. All rights reserved.
         </div>
     </footer>
@@ -91,4 +95,4 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
-</html> 
+</html>
