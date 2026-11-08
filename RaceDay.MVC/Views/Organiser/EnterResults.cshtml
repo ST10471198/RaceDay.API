@@ -1,0 +1,59 @@
+﻿@model List<RaceDay.MVC.Models.EnrolmentViewModel>
+@{
+    ViewData["Title"] = "Enter Results";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Capture Results for: <span class="text-primary">@ViewBag.EventName</span></h3>
+        <a asp-action="Dashboard" class="btn btn-secondary fw-bold shadow-sm">
+            Back to Dashboard
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning shadow-sm">There are no participants to enter results for.</div>
+    }
+    else
+    {
+        <form asp-action="SaveResults" method="post">
+            <input type="hidden" name="eventId" value="@ViewBag.EventId" />
+
+            <table class="table table-bordered table-hover shadow-sm align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Participant</th>
+                        <th>Category</th>
+                        <th style="width: 200px;">Finish Time (HH:MM:SS)</th>
+                        <th style="width: 150px;">Finishing Position</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <input type="hidden" asp-for="@Model[i].ResultID" />
+                            <input type="hidden" asp-for="@Model[i].ParticipantName" />
+                            <input type="hidden" asp-for="@Model[i].CategoryName" />
+
+                            <td class="fw-bold">@Model[i].ParticipantName</td>
+                            <td>@Model[i].CategoryName</td>
+
+                            <td>
+                                <input asp-for="@Model[i].FinishTime" type="time" step="1" class="form-control" />
+                            </td>
+                            <td>
+                                <input asp-for="@Model[i].Position" type="number" class="form-control" placeholder="e.g. 47" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg fw-bold shadow">Save All Results</button>
+            </div>
+        </form>
+    }
+</div>
