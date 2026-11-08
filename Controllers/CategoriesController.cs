@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.API.Data;
+using RaceDay.API.DTO; 
 using RaceDay.API.Models;
 
 namespace RaceDay.API.Controllers
@@ -36,31 +37,25 @@ namespace RaceDay.API.Controllers
         }
 
         [HttpPost("events/{eventId}/categories")]
-        public async Task<ActionResult<Category>> CreateCategory(
-            int eventId,
-            [FromQuery] string name,
-            [FromQuery] double distanceKM,
-            [FromQuery] TimeSpan startTime,
-            [FromQuery] int ageMin,
-            [FromQuery] int ageMax,
-            [FromQuery] decimal entryFee)
+        public async Task<ActionResult<Category>> CreateCategory(int eventId, [FromBody] CreateCategoryDto dto)
         {
             if (HttpContext.Session.GetString("Role") != "Organiser")
                 return Unauthorized("Only Organisers can create categories.");
 
             var ev = await _context.Events.FindAsync(eventId);
             if (ev == null) return NotFound("Event does not exist.");
+
             if (ev.OrganiserID != HttpContext.Session.GetInt32("UserId"))
                 return StatusCode(403, "You do not own this event.");
 
             var cat = new Category
             {
-                Name = name,
-                DistanceKM = distanceKM,
-                StartTime = startTime,
-                AgeMin = ageMin,
-                AgeMax = ageMax,
-                EntryFee = entryFee,
+                Name = dto.Name,
+                DistanceKM = dto.DistanceKM,
+                StartTime = dto.StartTime,
+                AgeMin = dto.AgeMin,
+                AgeMax = dto.AgeMax,
+                EntryFee = dto.EntryFee,
                 EventID = eventId
             };
 
@@ -70,14 +65,7 @@ namespace RaceDay.API.Controllers
         }
 
         [HttpPut("categories/{id}")]
-        public async Task<IActionResult> UpdateCategory(
-            int id,
-            [FromQuery] string name,
-            [FromQuery] double distanceKM,
-            [FromQuery] TimeSpan startTime,
-            [FromQuery] int ageMin,
-            [FromQuery] int ageMax,
-            [FromQuery] decimal entryFee)
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] CreateCategoryDto dto)
         {
             if (HttpContext.Session.GetString("Role") != "Organiser")
                 return Unauthorized("Only Organisers can update categories.");
@@ -86,15 +74,16 @@ namespace RaceDay.API.Controllers
             if (existing == null) return NotFound("Category does not exist.");
 
             var ev = await _context.Events.FindAsync(existing.EventID);
-            if (ev.OrganiserID != HttpContext.Session.GetInt32("UserId"))
+
+            if (ev == null || ev.OrganiserID != HttpContext.Session.GetInt32("UserId"))
                 return StatusCode(403, "You do not own this event.");
 
-            existing.Name = name;
-            existing.DistanceKM = distanceKM;
-            existing.StartTime = startTime;
-            existing.AgeMin = ageMin;
-            existing.AgeMax = ageMax;
-            existing.EntryFee = entryFee;
+            existing.Name = dto.Name;
+            existing.DistanceKM = dto.DistanceKM;
+            existing.StartTime = dto.StartTime;
+            existing.AgeMin = dto.AgeMin;
+            existing.AgeMax = dto.AgeMax;
+            existing.EntryFee = dto.EntryFee;
 
             await _context.SaveChangesAsync();
             return Ok(existing);
@@ -110,7 +99,8 @@ namespace RaceDay.API.Controllers
             if (cat == null) return NotFound("Category does not exist.");
 
             var ev = await _context.Events.FindAsync(cat.EventID);
-            if (ev.OrganiserID != HttpContext.Session.GetInt32("UserId"))
+
+            if (ev == null || ev.OrganiserID != HttpContext.Session.GetInt32("UserId"))
                 return StatusCode(403, "You do not own this event.");
 
             _context.Categories.Remove(cat);
